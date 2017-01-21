@@ -2,10 +2,7 @@
 using System.Collections;
 
 public class checkpoint : MonoBehaviour {
-	private GameObject player;
-	void Start(){
-		player = GameObject.Find("playerObj");
-	}
+	public GameObject player;
 	void OnTriggerEnter(Collider other){
 		if(other.gameObject.tag == "Player")
 		{

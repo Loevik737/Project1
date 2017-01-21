@@ -13,10 +13,9 @@ public class PlayerAutoScroll : MonoBehaviour
 	private Animator playerAnimator;
 	private Animator cameraAnimator;
 	private BoxCollider playerCollider;
-	private AudioSource playerSounds;
 	public GameObject smoke;
+	private audioController audioController;
 
-	private Dictionary<string,AudioClip> clips;
 	private float spawnPoint;
 	private static float startPoint;
 	private bool isAlive;
@@ -34,14 +33,7 @@ public class PlayerAutoScroll : MonoBehaviour
 		playerAnimator = player.GetComponent<Animator> ();
 		cameraAnimator = camera.GetComponent<Animator> ();
 		playerCollider = player.GetComponent<BoxCollider> ();
-		playerSounds = player.GetComponent<AudioSource> ();
-
-
-		clips = new Dictionary<string,AudioClip> ();
-		clips["hitGround"] = Resources.Load ("Audio/hittGround") as AudioClip;
-		clips["death"] = Resources.Load ("Audio/8-bit/Hit_01") as AudioClip;
-		clips["checkPoint"] = Resources.Load ("Audio/R&C/check") as AudioClip;
-		clips["collectLight"] = Resources.Load ("Audio/8-bit/Collect_Point_00") as AudioClip;
+		audioController = player.GetComponent<audioController> ();
 		inAir = true;
 		spawnPoint = -5f;
 		startPoint = -5f;
@@ -54,9 +46,8 @@ public class PlayerAutoScroll : MonoBehaviour
 	{
 		
 		if (isAlive) {
-			//get key press
+			
 			Jump(false);
-
 			if (Input.GetButton ("Restart")) {
 				SceneManager.LoadScene (SceneManager.GetActiveScene().buildIndex);
 			}
@@ -101,12 +92,12 @@ public class PlayerAutoScroll : MonoBehaviour
 	//sets the x location where the player spawns to point
 	public void setSpawnPoint(float point){
 		spawnPoint = point;
-		playerSounds.PlayOneShot (clips ["checkPoint"], 0.8f);
+		audioController.playAudio ("checkPoint");
 	}
 
 
 	public void collectLight(){
-		playerSounds.PlayOneShot (clips ["collectLight"], 0.8f);
+		audioController.playAudio ("collectLight");
 		stats.GetComponent<Stats> ().updateCollectedLights ();
 	}
 
@@ -132,7 +123,7 @@ public class PlayerAutoScroll : MonoBehaviour
 	private void diedFunction(){
 		stats.GetComponent<Stats> ().updateDeaths ();
 		isAlive = false;
-		playerSounds.PlayOneShot (clips ["death"], 0.8f);
+		audioController.playAudio ("death");
 		playerPhysics.velocity = Vector3.zero;
 		playerPhysics.AddForce (new Vector3 (0, 20, 0));
 		playerCollider.enabled = false;
@@ -155,7 +146,7 @@ public class PlayerAutoScroll : MonoBehaviour
 		{
 			checkCollision (col);
 			smoke.gameObject.GetComponent<ParticleSystem> ().Play ();
-			playerSounds.PlayOneShot (clips ["hitGround"],1f);
+			audioController.playAudio ("hitGround");
 			inAir = false;
 			axcJump = 40f;
 
